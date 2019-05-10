@@ -1,0 +1,22 @@
+html,
+body {
+  margin: 0px;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Fira Sans", sans-serif;
+  color: #222;
+}
+
+.page {
+  width: 800px;
+  margin: auto;
+}
+
+.repl-container {
+  padding: 10px;
+}
+
+h1 {
+  font-family: "Alfa Slab One", cursive;
+  padding-left: 5px;
+}

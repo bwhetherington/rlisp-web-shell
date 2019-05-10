@@ -1,0 +1,48 @@
+.repl {
+  font-family: "Source Code Pro", monospace;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  width: 600px;
+  margin: auto;
+}
+
+.repl .history {
+  /* height: 240px; */
+  overflow: auto;
+  background: rgb(24, 24, 24);
+  color: white;
+  padding: 4px;
+  flex-grow: 1;
+}
+
+.command {
+  color: rgb(168, 168, 168);
+}
+
+.exception {
+  color: rgb(224, 64, 64);
+}
+
+.input {
+  background: black;
+  color: white;
+  display: flex;
+  flex-grow: 0;
+}
+
+.input input {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: inherit;
+  flex-grow: 1;
+}
+
+input:focus {
+  outline: none;
+}

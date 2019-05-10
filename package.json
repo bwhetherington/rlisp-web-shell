@@ -14,5 +14,19 @@
   "devDependencies": {
     "parcel-bundler": "^1.12.3",
     "parcel-plugin-wasm.rs": "^1.2.8"
+  },
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "browserslist": {
+    "production": [
+      ">0.25%",
+      "not ie 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 Chrome version"
+    ]
   }
 }

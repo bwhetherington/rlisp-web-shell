@@ -1,8 +1,13 @@
 #[macro_use]
 extern crate cfg_if;
 
+#[macro_use]
+extern crate lazy_static;
+
+extern crate rlisp;
 extern crate wasm_bindgen;
 extern crate web_sys;
+use rlisp::prelude::*;
 use wasm_bindgen::prelude::*;
 
 cfg_if! {
@@ -27,25 +32,64 @@ cfg_if! {
     }
 }
 
-// Called by our JS entry point to run the example
 #[wasm_bindgen]
-pub fn run() -> Result<(), JsValue> {
-    // If the `console_error_panic_hook` feature is enabled this will set a panic hook, otherwise
-    // it will do nothing.
-    set_panic_hook();
-
-    // Use `web_sys`'s global `window` function to get a handle on the global
-    // window object.
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document on window");
-    let body = document.body().expect("document should have a body");
-
-    // Manufacture the element we're gonna append
-    let val = document.create_element("p")?;
-    val.set_inner_html("Hello from Rust, WebAssembly, and Parcel!");
-
-    body.append_child(&val)?;
-
-    Ok(())
+pub fn test_str(s: String) -> String {
+    format!("String: {}", s)
 }
 
+use rlisp::{
+    rlisp_interpreter::{
+        context::Context,
+        expression::{Callable, Expression},
+    },
+    rlisp_intrinsics::init_context,
+    rlisp_parser::Parser,
+};
+use std::rc::Rc;
+
+static mut CONTEXT: Option<Context> = None;
+
+#[wasm_bindgen]
+pub fn initialize() {
+    set_panic_hook();
+    unsafe {
+        let mut ctx = init_context("1.0.0");
+        let f = |_: &[Expression], _: &mut Context| Expression::default();
+        let expr = Expression::Callable(Callable::Intrinsic(Rc::new(f)));
+        ctx.insert("import", expr);
+
+        CONTEXT = Some(ctx);
+    }
+}
+
+#[wasm_bindgen]
+pub fn set_entry_point(input: &str) {
+    unsafe {
+        if let Some(ref mut ctx) = CONTEXT {
+            ctx.insert("__FILE__", input);
+        }
+    }
+}
+
+#[wasm_bindgen]
+pub fn handle_input(input: &str) -> Option<String> {
+    if input.len() > 0 {
+        let mut parser = Parser::new(input.chars());
+        let expr = parser.parse_expr()?;
+
+        unsafe {
+            if let Some(ref mut ctx) = CONTEXT {
+                let res = expr.eval(ctx);
+                if res.is_exception() {
+                    Some(format!("exception:{}", res))
+                } else {
+                    Some(format!("value:{}", res))
+                }
+            } else {
+                None
+            }
+        }
+    } else {
+        None
+    }
+}
